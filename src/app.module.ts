@@ -3,11 +3,21 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 import { logger } from './common/middlewares/logger.middleware';
 import { CatsModule } from './cats/cats.module';
 import { CatsController } from './cats/cats.controller';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './\bfilters/http-exception.filter';
 // import * as cors from 'cors';
 // import * as helmet from 'helmet';
 @Module({
     // CatsModule을 구성하고 가져옴으로 인해서 CatsController와 CatsService를 직접 등록해줄 필요가 없다.
-  imports: [CatsModule], 
+  imports: [CatsModule],
+
+  providers: [
+  
+    { // 이 방식으로 전역 필터를 등록해 준다.
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter // 커텀 필터 등록
+    }
+  ]
 })
 export class AppModule implements NestModule {
   // configure()는 async/await를 적용해서도 사용 가능
