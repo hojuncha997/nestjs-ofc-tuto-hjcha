@@ -1,13 +1,18 @@
 
-import { Controller, Get, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpException, HttpStatus , BadRequestException, UseFilters} from '@nestjs/common';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
+import { CustomForbiddenException } from 'src/exceptions/forbidden.exception';
+import { HttpExceptionFilter } from 'src/\bfilters/http-exception.filter';
 
 @Controller('cats')
+// @UseFilters(new HttpExceptionFilter())  // 커스텀 익셉션 필터를 컨트롤러 전체에 적용
 export class CatsController {
   // private final CatsService catsService 과 유사. 캣서비스 인스턴스를 주입받아 사용
   constructor(private catsService: CatsService) {}
+
+
 
   @Post()
   async create(@Body() createCatDto: CreateCatDto) {
@@ -40,20 +45,27 @@ export class CatsController {
   // }
 
 
-  @Get()
-  async findAll() : Promise<Cat[]> {
-    try {
-      throw new Error() // 일부러 에러 발생시키기.
-      return await this.catsService.findAll()
-    } catch (error) {
-      throw new HttpException({
-        status: HttpStatus.FORBIDDEN,
-        error: 'This is a custom message',
-      }, HttpStatus.FORBIDDEN, {
-        cause: error
-      });
-    }
-  }
+  // @Get()
+  // async findAll() : Promise<Cat[]> {
+  //   try {
+  //     throw new Error() // 일부러 에러 발생시키기.
+  //     return await this.catsService.findAll()
+  //   } catch (error) {
+  //     throw new HttpException({
+  //       status: HttpStatus.FORBIDDEN,
+  //       error: 'This is a custom message',
+  //     }, HttpStatus.FORBIDDEN, {
+  //       cause: error
+  //     });
+  //   }
+  // }
 
+  @Get()
+  async findAll() {
+    throw new BadRequestException('Something bad happened', {
+      cause: new Error(),
+      description: 'Some error description',
+    });
+  }
 
 }
