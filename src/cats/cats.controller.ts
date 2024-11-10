@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Body, HttpException, HttpStatus , BadRequestException, UseFilters} from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpException, HttpStatus , BadRequestException, UseFilters, Param, ParseIntPipe} from '@nestjs/common';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
@@ -68,4 +68,17 @@ export class CatsController {
     });
   }
 
+
+  @Get(':id')  
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    // 여기서 pipe는 @Param()이 아니라 ParseIntPipe이다.
+    // @Param 데코레이터(실제로는 함수)에 'id'라는 파라미터 이름과 ParseIntPipe를 매개변수로 전달한다.
+    // 실행 순서:
+    // 1. @Param이 URL에서 'id' 값을 추출 (예: "123" 문자열)
+    // 2. 추출된 값이 ParseIntPipe의 transform 메소드로 전달되어 처리 (문자열 → 숫자 변환)
+    // 3. 파이프에서 반환된 값(숫자 123)이 findOne() 핸들러의 id:number 매개변수에 할당된다.
+    
+    console.log(id)  // 123 (number 타입)
+    // return this.catsService.findOne(id);
+  }
 }
